@@ -16,8 +16,6 @@ namespace MiniProject_UserManagement.Models
         public string IdNumber { get; set; }
         public string? ContactDetail {get;set;}
 
-        // Foreign key for Group
-        public int GroupId { get; set; }
-        public Group Group { get; set; }
+        public ICollection<UserGroup>? UserGroups { get; set; }
     }
 }

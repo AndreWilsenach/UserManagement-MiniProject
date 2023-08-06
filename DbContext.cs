@@ -30,21 +30,34 @@ public class MyDbContext : DbContext
         );
 
         // Seed Groups table with initial data
-        modelBuilder.Entity<Group>().HasData(
-            new Group { Id = 1, Name = "Minors" },
-            new Group { Id = 2, Name = "Legues" },
-            new Group { Id = 3, Name = "Pros" }
-        );
+        //modelBuilder.Entity<Group>().HasData(
+        //    new Group { Id = 1, Name = "Minors" },
+        //    new Group { Id = 2, Name = "Legues" },
+        //    new Group { Id = 3, Name = "Pros" }
+        //);
 
         // Seed Users table with initial data
-        modelBuilder.Entity<User>().HasData(
-            new User { Id = 1, Name = "James", GroupId = 1 },
-            new User { Id = 2, Name = "Susan", GroupId = 1 },
-            new User { Id = 3, Name = "Jan", GroupId = 2 },
-            new User { Id = 4, Name = "uston", GroupId = 2 },
-            new User { Id = 5, Name = "Sarel", GroupId = 3 },
-            new User { Id = 6, Name = "Franciska", GroupId = 3 }
-        );
+        //modelBuilder.Entity<User>().HasData(
+        //    new User { Id = 1, Name = "James",  },
+        //    new User { Id = 2, Name = "Susan",  },
+        //    new User { Id = 3, Name = "Jan", },
+        //    new User { Id = 4, Name = "uston",  },
+        //    new User { Id = 5, Name = "Sarel", },
+        //    new User { Id = 6, Name = "Franciska",  }
+        //);
+
+        modelBuilder.Entity<UserGroup>()
+        .HasKey(ug => new { ug.UserId, ug.GroupId });
+
+        modelBuilder.Entity<UserGroup>()
+           .HasOne(ug => ug.User)
+           .WithMany(u => u.UserGroups)
+           .HasForeignKey(ug => ug.UserId);
+
+        modelBuilder.Entity<UserGroup>()
+            .HasOne(ug => ug.Group)
+            .WithMany(g => g.UserGroups)
+            .HasForeignKey(ug => ug.GroupId);
 
         // Set up the many-to-many relationship between Groups and Permissions
         modelBuilder.Entity<GroupPermission>()

@@ -45,17 +45,13 @@ namespace MiniProject_UserManagement.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GroupId = table.Column<int>(type: "int", nullable: false)
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IdNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContactDetail = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_Groups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Groups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -82,14 +78,28 @@ namespace MiniProject_UserManagement.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Groups",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
+            migrationBuilder.CreateTable(
+                name: "UserGroup",
+                columns: table => new
                 {
-                    { 1, "Minors" },
-                    { 2, "Legues" },
-                    { 3, "Pros" }
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    GroupId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserGroup", x => new { x.UserId, x.GroupId });
+                    table.ForeignKey(
+                        name: "FK_UserGroup_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserGroup_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -102,27 +112,14 @@ namespace MiniProject_UserManagement.Migrations
                     { 3, "Level 3" }
                 });
 
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "GroupId", "Name" },
-                values: new object[,]
-                {
-                    { 1, 1, "James" },
-                    { 2, 1, "Susan" },
-                    { 3, 2, "Jan" },
-                    { 4, 2, "uston" },
-                    { 5, 3, "Sarel" },
-                    { 6, 3, "Franciska" }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_GroupPermission_PermissionId",
                 table: "GroupPermission",
                 column: "PermissionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_GroupId",
-                table: "Users",
+                name: "IX_UserGroup_GroupId",
+                table: "UserGroup",
                 column: "GroupId");
         }
 
@@ -133,13 +130,16 @@ namespace MiniProject_UserManagement.Migrations
                 name: "GroupPermission");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "UserGroup");
 
             migrationBuilder.DropTable(
                 name: "Permissions");
 
             migrationBuilder.DropTable(
                 name: "Groups");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

@@ -35,23 +35,6 @@ namespace MiniProject_UserManagement.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Groups");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Minors"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Legues"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Pros"
-                        });
                 });
 
             modelBuilder.Entity("MiniProject_UserManagement.Models.GroupPermission", b =>
@@ -111,56 +94,39 @@ namespace MiniProject_UserManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("GroupId")
-                        .HasColumnType("int");
+                    b.Property<string>("ContactDetail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("MiniProject_UserManagement.Models.UserGroup", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "GroupId");
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            GroupId = 1,
-                            Name = "James"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            GroupId = 1,
-                            Name = "Susan"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            GroupId = 2,
-                            Name = "Jan"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            GroupId = 2,
-                            Name = "uston"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            GroupId = 3,
-                            Name = "Sarel"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            GroupId = 3,
-                            Name = "Franciska"
-                        });
+                    b.ToTable("UserGroup");
                 });
 
             modelBuilder.Entity("MiniProject_UserManagement.Models.GroupPermission", b =>
@@ -182,25 +148,40 @@ namespace MiniProject_UserManagement.Migrations
                     b.Navigation("Permission");
                 });
 
-            modelBuilder.Entity("MiniProject_UserManagement.Models.User", b =>
+            modelBuilder.Entity("MiniProject_UserManagement.Models.UserGroup", b =>
                 {
                     b.HasOne("MiniProject_UserManagement.Models.Group", "Group")
-                        .WithMany()
+                        .WithMany("UserGroups")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MiniProject_UserManagement.Models.User", "User")
+                        .WithMany("UserGroups")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Group");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MiniProject_UserManagement.Models.Group", b =>
                 {
                     b.Navigation("GroupPermissions");
+
+                    b.Navigation("UserGroups");
                 });
 
             modelBuilder.Entity("MiniProject_UserManagement.Models.Permission", b =>
                 {
                     b.Navigation("GroupPermissions");
+                });
+
+            modelBuilder.Entity("MiniProject_UserManagement.Models.User", b =>
+                {
+                    b.Navigation("UserGroups");
                 });
 #pragma warning restore 612, 618
         }
