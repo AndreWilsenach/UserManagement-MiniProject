@@ -23,7 +23,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
         try { 
-        return await _context.Users.ToListAsync();
+        return Ok(await _context.Users.ToListAsync());
         }
         catch(Exception error) {
      Console.WriteLine(error.Message);
@@ -42,7 +42,7 @@ public class UserController : ControllerBase
             return NotFound();
         }
 
-        return user;
+        return Ok(user);
     }
 
     // POST: api/User
@@ -133,7 +133,7 @@ public class UserController : ControllerBase
         try
         {
             int userCount =   _context.Users.Count();
-            return  Ok( userCount);
+            return  Ok(userCount);
         }
         catch (Exception error)
         {
