@@ -16,6 +16,6 @@ namespace MiniProject_UserManagement.Models
         public string IdNumber { get; set; }
         public string? ContactDetail {get;set;}
 
-        public ICollection<UserGroup>? UserGroups { get; set; }
+        public ICollection<Group>? UserGroups { get; set; }
     }
 }

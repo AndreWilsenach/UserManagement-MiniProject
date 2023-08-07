@@ -7,7 +7,7 @@ namespace MiniProject_UserManagement.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public ICollection<UserGroup>? UserGroups { get; set; }
-        public ICollection<GroupPermission>? GroupPermissions { get; set; } = new List<GroupPermission>();
+        public ICollection<User> UserList { get; set; } = new List<User>();
+        public ICollection<Permission> PermissionList { get; set; } = new List<Permission>();
     }
 }

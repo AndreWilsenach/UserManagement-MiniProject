@@ -9,21 +9,21 @@ using System.Threading.Tasks;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController : ControllerBase
+public class PermissionController : ControllerBase
 {
     private readonly MyDbContext _context;
 
-    public UserController(MyDbContext context)
+    public PermissionController(MyDbContext context)
     {
         _context = context;
     }
 
-    // GET: api/User
+    // GET: api/Permission
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<Permission>>> GetPermissions()
     {
         try { 
-        return await _context.Users.ToListAsync();
+        return await _context.Permissions.ToListAsync();
         }
         catch(Exception error) {
      Console.WriteLine(error.Message);
@@ -31,29 +31,29 @@ public class UserController : ControllerBase
         }
     }
 
-    // GET: api/User/5
+    // GET: api/Permission/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(int id)
+    public async Task<ActionResult<Permission>> GetPermission(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var permission = await _context.Permissions.FindAsync(id);
 
-        if (user == null)
+        if (permission == null)
         {
             return NotFound();
         }
 
-        return user;
+        return permission;
     }
 
-    // POST: api/User
+    // POST: api/Permission
     [HttpPost]
-    public async Task<ActionResult<User>> CreateUser(User user)
+    public async Task<ActionResult<Permission>> CreatePermission(Permission permission)
     {
         try { 
-        _context.Users.Add(user);
+        _context.Permissions.Add(permission);
         await _context.SaveChangesAsync();
 
-        return Ok(CreatedAtAction(nameof(GetUser), new { id = user.Id }, user));
+        return CreatedAtAction(nameof(GetPermission), new { id = permission.Id }, permission);
         }
         catch (Exception error) { 
             Console.WriteLine(error.Message);
@@ -62,25 +62,25 @@ public class UserController : ControllerBase
         }
     }
 
-    // PUT: api/User/5
+    // PUT: api/Permission/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, User user)
+    public async Task<IActionResult> UpdatePermission(int id, Permission permission)
     {
         try
         {
-            if (id != user.Id)
+            if (id != permission.Id)
         {
             return BadRequest();
         }
 
-        _context.Entry(user).State = EntityState.Modified;
+        _context.Entry(permission).State = EntityState.Modified;
 
      
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!UserExists(id))
+            if (!PermissionExists(id))
             {
                 return NotFound();
             }
@@ -90,32 +90,32 @@ public class UserController : ControllerBase
             }
         }
 
-        return Ok();
+        return NoContent();
     }
 
-    // DELETE: api/User/5
+    // DELETE: api/Permission/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id)
+    public async Task<IActionResult> DeletePermission(int id)
     {
         try { 
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
+        var permission = await _context.Permissions.FindAsync(id);
+        if (permission == null)
         {
             return NotFound();
         }
 
-        _context.Users.Remove(user);
+        _context.Permissions.Remove(permission);
         
         await _context.SaveChangesAsync();
 
-        return Ok();
+        return NoContent();
         }
         catch (Exception error) {
         return BadRequest(error.Message);
         }
     }
 
-    private bool UserExists(int id)
+    private bool PermissionExists(int id)
     {
         try {
         return _context.Users.Any(e => e.Id == id);
@@ -123,22 +123,6 @@ public class UserController : ControllerBase
         catch (Exception error) {
             Console.WriteLine(error.Message);
             return false;
-              }
-    }
-
-    // GET: api/User
-    [HttpGet("userCount")]
-    public  ActionResult<int> GetUserCount()
-    {
-        try
-        {
-            int userCount =   _context.Users.Count();
-            return  Ok( userCount);
-        }
-        catch (Exception error)
-        {
-            Console.WriteLine(error.Message);
-            return BadRequest();
         }
     }
 }

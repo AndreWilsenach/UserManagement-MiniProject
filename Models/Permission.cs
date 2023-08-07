@@ -6,6 +6,6 @@
         public string Name { get; set; }
 
         // Navigation property to represent the relationship between Permission and Group
-        public ICollection<GroupPermission> GroupPermissions { get; set; } = new List<GroupPermission>();
+        public ICollection<Group> GroupList { get; set; } = new List<Group>();
     }
 }

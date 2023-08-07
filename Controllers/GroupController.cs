@@ -9,21 +9,21 @@ using System.Threading.Tasks;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController : ControllerBase
+public class GroupController : ControllerBase
 {
     private readonly MyDbContext _context;
 
-    public UserController(MyDbContext context)
+    public GroupController(MyDbContext context)
     {
         _context = context;
     }
 
-    // GET: api/User
+    // GET: api/Group
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<Group>>> GetGroups()
     {
         try { 
-        return await _context.Users.ToListAsync();
+        return await _context.Groups.ToListAsync();
         }
         catch(Exception error) {
      Console.WriteLine(error.Message);
@@ -31,29 +31,29 @@ public class UserController : ControllerBase
         }
     }
 
-    // GET: api/User/5
+    // GET: api/Group/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(int id)
+    public async Task<ActionResult<Group>> GetGroup(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var group = await _context.Groups.FindAsync(id);
 
-        if (user == null)
+        if (group == null)
         {
             return NotFound();
         }
 
-        return user;
+        return group;
     }
 
-    // POST: api/User
+    // POST: api/Group
     [HttpPost]
-    public async Task<ActionResult<User>> CreateUser(User user)
+    public async Task<ActionResult<Group>> CreateGroup(Group group)
     {
         try { 
-        _context.Users.Add(user);
+        _context.Groups.Add(group);
         await _context.SaveChangesAsync();
 
-        return Ok(CreatedAtAction(nameof(GetUser), new { id = user.Id }, user));
+        return CreatedAtAction(nameof(GetGroup), new { id = group.Id }, group);
         }
         catch (Exception error) { 
             Console.WriteLine(error.Message);
@@ -62,25 +62,25 @@ public class UserController : ControllerBase
         }
     }
 
-    // PUT: api/User/5
+    // PUT: api/Group/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, User user)
+    public async Task<IActionResult> UpdateGroup(int id, Group group)
     {
         try
         {
-            if (id != user.Id)
+            if (id != group.Id)
         {
             return BadRequest();
         }
 
-        _context.Entry(user).State = EntityState.Modified;
+        _context.Entry(group).State = EntityState.Modified;
 
      
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!UserExists(id))
+            if (!GroupExists(id))
             {
                 return NotFound();
             }
@@ -90,32 +90,32 @@ public class UserController : ControllerBase
             }
         }
 
-        return Ok();
+        return NoContent();
     }
 
-    // DELETE: api/User/5
+    // DELETE: api/Group/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id)
+    public async Task<IActionResult> DeleteGroup(int id)
     {
         try { 
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
+        var group = await _context.Groups.FindAsync(id);
+        if (group == null)
         {
             return NotFound();
         }
 
-        _context.Users.Remove(user);
+        _context.Groups.Remove(group);
         
         await _context.SaveChangesAsync();
 
-        return Ok();
+        return NoContent();
         }
         catch (Exception error) {
         return BadRequest(error.Message);
         }
     }
 
-    private bool UserExists(int id)
+    private bool GroupExists(int id)
     {
         try {
         return _context.Users.Any(e => e.Id == id);
@@ -124,21 +124,5 @@ public class UserController : ControllerBase
             Console.WriteLine(error.Message);
             return false;
               }
-    }
-
-    // GET: api/User
-    [HttpGet("userCount")]
-    public  ActionResult<int> GetUserCount()
-    {
-        try
-        {
-            int userCount =   _context.Users.Count();
-            return  Ok( userCount);
-        }
-        catch (Exception error)
-        {
-            Console.WriteLine(error.Message);
-            return BadRequest();
-        }
     }
 }
