@@ -107,7 +107,7 @@
                 Description: permissionDescription
             };
 
-            const response = await fetch('/api/Permission', {
+            const response = await fetch('https://localhost:7246/api/Permission', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -124,7 +124,7 @@
 
         // Function to delete a permission by ID
         async function deletePermission(id) {
-            const response = await fetch(`/api/Permission/${id}`, {
+            const response = await fetch(`https://localhost:7246/api/Permission/${id}`, {
                 method: 'DELETE'
             });
 
@@ -168,7 +168,7 @@
                 IdNumber: idNumber
             };
 
-            const response = await fetch('/api/User', {
+            const response = await fetch('https://localhost:7246/api/User', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -185,7 +185,7 @@
 
         // Function to delete a user by ID
         async function deleteUser(id) {
-            const response = await fetch(`/api/User/${id}`, {
+            const response = await fetch(`https://localhost:7246/api/User/${id}`, {
                 method: 'DELETE'
             });
 
@@ -209,7 +209,7 @@
                 IdNumber: idNumber
             };
 
-            const response = await fetch(`/api/User/${id}`, {
+            const response = await fetch(`https://localhost:7246/api/User/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -280,7 +280,7 @@
                 IdNumber: idNumber
             };
 
-            const response = await fetch('/api/User', {
+            const response = await fetch('https://localhost:7246/api/User', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -297,7 +297,7 @@
 
         // Function to delete a user by ID
         async function deleteUser(id) {
-            const response = await fetch(`/api/User/${id}`, {
+            const response = await fetch(`https://localhost:7246/api/User/${id}`, {
                 method: 'DELETE'
             });
 
@@ -321,7 +321,7 @@
                 IdNumber: idNumber
             };
 
-            const response = await fetch(`/api/User/${id}`, {
+            const response = await fetch(`https://localhost:7246/api/User/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -354,7 +354,7 @@
 
         // Function to fetch all groups from the API
         async function getGroups() {
-            const response = await fetch('/api/Group');
+            const response = await fetch('https://localhost:7246/api/Group');
             return response.json();
         }
 
@@ -366,7 +366,7 @@
                 Name: groupName
             };
 
-            const response = await fetch('/api/Group', {
+            const response = await fetch('https://localhost:7246/api/Group', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -55,7 +55,6 @@ namespace MiniProject_UserManagement.Controllers
         {
             try
             {
-
                 var permission = await _context.Permissions
                     .Include(p => p.GroupList)
                     .FirstOrDefaultAsync(u => u.Id == permissionId);
