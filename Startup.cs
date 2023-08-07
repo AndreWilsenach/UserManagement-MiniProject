@@ -18,7 +18,7 @@ namespace MiniProject_UserManagement
             {
                 options.AddPolicy("AllowAll", builder =>
                 {
-                    builder.WithOrigins("https://localhost:7246", "*")
+                    builder.WithOrigins("https://localhost:7246", "https://localhost:7246","*")
            .AllowAnyHeader()
            .AllowAnyMethod()
                            ;
