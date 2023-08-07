@@ -22,11 +22,13 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
-        try { 
-        return Ok(await _context.Users.ToListAsync());
+        try
+        {
+            return Ok(await _context.Users.Include(u => u.UserGroups).ToListAsync());
         }
-        catch(Exception error) {
-     Console.WriteLine(error.Message);
+        catch (Exception error)
+        {
+            Console.WriteLine(error.Message);
             return BadRequest();
         }
     }
@@ -35,7 +37,9 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUser(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users
+            .Include(u => u.UserGroups)
+            .FirstOrDefaultAsync(u => u.Id == id);
 
         if (user == null)
         {
@@ -49,13 +53,16 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<User>> CreateUser(User user)
     {
-        try { 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        try
+        {
+            //Should the context expand this will be updated to check if that spesific user already exists in db
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
 
-        return Ok(CreatedAtAction(nameof(GetUser), new { id = user.Id }, user));
+            return Ok(CreatedAtAction(nameof(GetUser), new { id = user.Id }, user));
         }
-        catch (Exception error) { 
+        catch (Exception error)
+        {
             Console.WriteLine(error.Message);
 
             return BadRequest(error);
@@ -69,14 +76,15 @@ public class UserController : ControllerBase
         try
         {
             if (id != user.Id)
-        {
-            return BadRequest();
-        }
+            {
+                return BadRequest();
+            }
 
-        _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(user).State = EntityState.Modified;
 
-     
+
             await _context.SaveChangesAsync();
+            return Ok($"User '{user.Name}'");
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -90,50 +98,57 @@ public class UserController : ControllerBase
             }
         }
 
-        return Ok();
+
     }
 
     // DELETE: api/User/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        try { 
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
+        try
         {
-            return NotFound();
-        }
+            var user = await _context.Users
+                    .Include(u => u.UserGroups)
+                    .FirstOrDefaultAsync(g => g.Id == id);
 
-        _context.Users.Remove(user);
-        
-        await _context.SaveChangesAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
 
-        return Ok();
+            _context.Users.Remove(user);
+
+            await _context.SaveChangesAsync();
+
+            return Ok($"User {user.Name} successfully Deleted");
         }
-        catch (Exception error) {
-        return BadRequest(error.Message);
+        catch (Exception error)
+        {
+            return BadRequest(error.Message);
         }
     }
 
     private bool UserExists(int id)
     {
-        try {
-        return _context.Users.Any(e => e.Id == id);
+        try
+        {
+            return _context.Users.Include(u => u.UserGroups).Any(e => e.Id == id);
         }
-        catch (Exception error) {
+        catch (Exception error)
+        {
             Console.WriteLine(error.Message);
             return false;
-              }
+        }
     }
 
     // GET: api/User
     [HttpGet("userCount")]
-    public  ActionResult<int> GetUserCount()
+    public ActionResult<int> GetUserCount()
     {
         try
         {
-            int userCount =   _context.Users.Count();
-            return  Ok(userCount);
+            int userCount = _context.Users.Count();
+            return Ok(userCount);
         }
         catch (Exception error)
         {

@@ -22,11 +22,13 @@ public class PermissionController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Permission>>> GetPermissions()
     {
-        try { 
-        return await _context.Permissions.ToListAsync();
+        try
+        {
+            return await _context.Permissions.ToListAsync();
         }
-        catch(Exception error) {
-     Console.WriteLine(error.Message);
+        catch (Exception error)
+        {
+            Console.WriteLine(error.Message);
             return BadRequest();
         }
     }
@@ -49,13 +51,15 @@ public class PermissionController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Permission>> CreatePermission(Permission permission)
     {
-        try { 
-        _context.Permissions.Add(permission);
-        await _context.SaveChangesAsync();
+        try
+        {
+            _context.Permissions.Add(permission);
+            await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetPermission), new { id = permission.Id }, permission);
+            return CreatedAtAction(nameof(GetPermission), new { id = permission.Id }, permission);
         }
-        catch (Exception error) { 
+        catch (Exception error)
+        {
             Console.WriteLine(error.Message);
 
             return BadRequest(error);
@@ -69,13 +73,13 @@ public class PermissionController : ControllerBase
         try
         {
             if (id != permission.Id)
-        {
-            return BadRequest();
-        }
+            {
+                return BadRequest();
+            }
 
-        _context.Entry(permission).State = EntityState.Modified;
+            _context.Entry(permission).State = EntityState.Modified;
 
-     
+
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
@@ -97,30 +101,37 @@ public class PermissionController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePermission(int id)
     {
-        try { 
-        var permission = await _context.Permissions.FindAsync(id);
-        if (permission == null)
+        try
         {
-            return NotFound();
-        }
+            var permission = await _context.Permissions
+                .Include(u => u.GroupList)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-        _context.Permissions.Remove(permission);
-        
-        await _context.SaveChangesAsync();
+            if (permission == null)
+            {
+                return NotFound();
+            }
 
-        return NoContent();
+            _context.Permissions.Remove(permission);
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
-        catch (Exception error) {
-        return BadRequest(error.Message);
+        catch (Exception error)
+        {
+            return BadRequest(error.Message);
         }
     }
 
     private bool PermissionExists(int id)
     {
-        try {
-        return _context.Users.Any(e => e.Id == id);
+        try
+        {
+            return _context.Permissions.Any(e => e.Id == id);
         }
-        catch (Exception error) {
+        catch (Exception error)
+        {
             Console.WriteLine(error.Message);
             return false;
         }

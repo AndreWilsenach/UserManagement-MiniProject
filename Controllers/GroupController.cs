@@ -1,128 +1,137 @@
-﻿namespace MiniProject_UserManagement;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniProject_UserManagement.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-[Route("api/[controller]")]
-[ApiController]
-public class GroupController : ControllerBase
+namespace MiniProject_UserManagement.Controllers
 {
-    private readonly MyDbContext _context;
-
-    public GroupController(MyDbContext context)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class GroupController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly MyDbContext _context;
 
-    // GET: api/Group
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Group>>> GetGroups()
-    {
-        try { 
-        return await _context.Groups.ToListAsync();
-        }
-        catch(Exception error) {
-     Console.WriteLine(error.Message);
-            return BadRequest();
-        }
-    }
-
-    // GET: api/Group/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Group>> GetGroup(int id)
-    {
-        var group = await _context.Groups.FindAsync(id);
-
-        if (group == null)
+        public GroupController(MyDbContext context)
         {
-            return NotFound();
+            _context = context;
         }
 
-        return group;
-    }
-
-    // POST: api/Group
-    [HttpPost]
-    public async Task<ActionResult<Group>> CreateGroup(Group group)
-    {
-        try { 
-        _context.Groups.Add(group);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetGroup), new { id = group.Id }, group);
-        }
-        catch (Exception error) { 
-            Console.WriteLine(error.Message);
-
-            return BadRequest(error);
-        }
-    }
-
-    // PUT: api/Group/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateGroup(int id, Group group)
-    {
-        try
+        // GET: api/Group
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Group>>> GetGroups()
         {
-            if (id != group.Id)
-        {
-            return BadRequest();
+            try
+            {
+                return await _context.Groups.ToListAsync();
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error.Message);
+                return BadRequest();
+            }
         }
 
-        _context.Entry(group).State = EntityState.Modified;
-
-     
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
+        // GET: api/Group/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Group>> GetGroup(int id)
         {
-            if (!GroupExists(id))
+            var group = await _context.Groups.FirstOrDefaultAsync(g => g.Id == id);
+
+            if (group == null)
             {
                 return NotFound();
             }
-            else
+
+            return group;
+        }
+
+        // POST: api/Group
+        [HttpPost]
+        public async Task<ActionResult<Group>> CreateGroup(Group group)
+        {
+            try
             {
-                throw;
+                _context.Groups.Add(group);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetGroup), new { id = group.Id }, group);
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error.Message);
+
+                return BadRequest(error);
             }
         }
 
-        return NoContent();
-    }
-
-    // DELETE: api/Group/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteGroup(int id)
-    {
-        try { 
-        var group = await _context.Groups.FindAsync(id);
-        if (group == null)
+        // PUT: api/Group/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateGroup(int id, Group group)
         {
-            return NotFound();
+            try
+            {
+                if (id != group.Id)
+                {
+                    return BadRequest();
+                }
+
+                _context.Entry(group).State = EntityState.Modified;
+
+
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!GroupExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        _context.Groups.Remove(group);
-        
-        await _context.SaveChangesAsync();
+        // DELETE: api/Group/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGroup(int id)
+        {
+            try
+            {
+                var group = await _context.Groups
+                .Include(g => g.UserList)
+                           .FirstOrDefaultAsync(g => g.Id == id);
+                if (group == null)
+                {
+                    return NotFound();
+                }
 
-        return NoContent();
-        }
-        catch (Exception error) {
-        return BadRequest(error.Message);
-        }
-    }
+                _context.Groups.Remove(group);
 
-    private bool GroupExists(int id)
-    {
-        try {
-        return _context.Users.Any(e => e.Id == id);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception error)
+            {
+                return BadRequest(error.Message);
+            }
         }
-        catch (Exception error) {
-            Console.WriteLine(error.Message);
-            return false;
-              }
+
+        private bool GroupExists(int id)
+        {
+            try
+            {
+                return _context.Users.Any(e => e.Id == id);
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error.Message);
+                return false;
+            }
+        }
     }
 }
