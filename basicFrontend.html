@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User and Group Management</title>
+    <style>
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>User and Group Management</h1>
+    <!-- User Management Section -->
+    <div>
+        <h2>User Management</h2>
+        <label for="name">Name:</label>
+        <input type="text" id="name">
+        <label for="surname">Surname:</label>
+        <input type="text" id="surname">
+        <label for="idNumber">ID Number:</label>
+        <input type="text" id="idNumber">
+        <button onclick="addUser()">Add User</button>
+    </div>
+    <div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>ID Number</th>
+                <th>Actions</th>
+            </tr>
+            <tbody id="userTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Group Management Section -->
+    <div>
+        <h2>Group Management</h2>
+        <label for="groupName">Group Name:</label>
+        <input type="text" id="groupName">
+        <button onclick="addGroup()">Add Group</button>
+    </div>
+    <div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+            <tbody id="groupTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Permission Management Section -->
+    <div>
+        <h2>Permission Management</h2>
+        <label for="permissionName">Permission Name:</label>
+        <input type="text" id="permissionName">
+        <label for="permissionDescription">Description:</label>
+        <input type="text" id="permissionDescription">
+        <button onclick="addPermission()">Add Permission</button>
+    </div>
+    <div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            <tbody id="permissionTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // ... (existing code for user and group management)
+
+        // Function to fetch all permissions from the API
+        async function getPermissions() {
+            const response = await fetch('/api/Permission');
+            return response.json();
+        }
+
+        // Function to create a new permission
+        async function addPermission() {
+            const permissionName = document.getElementById('permissionName').value;
+            const permissionDescription = document.getElementById('permissionDescription').value;
+
+            const newPermission = {
+                Name: permissionName,
+                Description: permissionDescription
+            };
+
+            const response = await fetch('/api/Permission', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newPermission)
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error adding permission.');
+            }
+        }
+
+        // Function to delete a permission by ID
+        async function deletePermission(id) {
+            const response = await fetch(`/api/Permission/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error deleting permission.');
+            }
+        }
+
+        // Function to create the table rows for permissions
+        function createPermissionTableRow(permission) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${permission.id}</td>
+                <td>${permission.name}</td>
+                <td>${permission.description}</td>
+                <td>
+                    <button onclick="deletePermission(${permission.id})">Delete</button>
+                </td>
+            `;
+            return row;
+        }
+
+        // Function to initialize the web page and fetch users, groups, and permissions
+        async function init() {
+            // ... (existing code to fetch users and groups)
+
+            const permissions = await getPermissions();
+
+            const permissionTableBody = document.getElementById('permissionTableBody');
+            permissions.forEach(permission => {
+                permissionTableBody.appendChild(createPermissionTableRow(permission));
+            });
+        }
+
+        // Call the init function when the page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
